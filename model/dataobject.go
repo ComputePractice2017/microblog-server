@@ -3,6 +3,7 @@ package model
 import (
 	"log"
 	"os"
+	"strings"
 	"time"
 
 	r "gopkg.in/gorethink/gorethink.v3"
@@ -219,4 +220,57 @@ func CreateFollowTableIfNotExist() error {
 	_, err = r.DB("microblog").Table("follow").Insert(data).RunWrite(session)
 
 	return err
+}
+
+//получаем наши новости
+func GetNews() ([]Twitt, error) {
+	//var userName string = "MeXos"
+	res, err := r.DB("microblog").Table("follow").Get("MeXoS").Run(session)
+	if err != nil {
+		return nil, err
+	}
+
+	var response Follow
+	err = res.One(&response)
+	if err != nil {
+		return nil, err
+	}
+
+	var following string = response.Follow
+	var arr []string = strings.Split(following, " ")
+	var answer []Twitt
+	var temp []Twitt
+	for i := 0; i < len(arr); i++ {
+		log.Println("i: ", i)
+		log.Println("user: ", arr[i])
+		res, err := r.DB("microblog").Table("twitt").Filter(map[string]interface{}{"user": arr[i],}).Run(session)
+		if err != nil {
+			return nil, err
+		}
+
+		err = res.All(&temp)
+		if err != nil {
+			return nil, err
+		}
+		for j := 0; j<len(temp); j++{
+			log.Println(temp[j].Text)
+			answer = append(answer, temp[j])
+		}
+	}
+	return answer, nil
+}
+
+//получение моих твиттов
+func GetMyTwitts() ([]Twitt, error) {
+	res, err := r.DB("microblog").Table("twitt").Filter(map[string]interface{}{"user": "MeXoS"}).Run(session)
+	//log.Println()
+	if err != nil {
+		return nil, err
+	}
+	var response []Twitt
+	err = res.All(&response)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
 }
