@@ -5,7 +5,6 @@ import (
 	"os"
 	"strings"
 	"time"
-	//"fmt"
 
 	r "gopkg.in/gorethink/gorethink.v3"
 )
