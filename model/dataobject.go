@@ -274,3 +274,24 @@ func GetMyTwitts() ([]Twitt, error) {
 	}
 	return response, nil
 }
+//новый твитт
+func NewTwitt(p Twitt) (Twitt, error) {
+	res, err := r.UUID().Run(session)
+	if err != nil {
+		return p, err
+	}
+
+	var UUID string
+	err = res.One(&UUID)
+	if err != nil {
+		return p, err
+	}
+
+	p.ID = UUID
+
+	res, err = r.DB("microblog").Table("twitt").Insert(p).Run(session)
+	if err != nil {
+		return p, err
+	}
+	return p, nil
+}
