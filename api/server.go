@@ -2,7 +2,6 @@ package api
 
 import (
 	"log"
-
 	"net/http"
 	"os"
 
@@ -21,6 +20,7 @@ func Run() {
 	log.Println("Connected")
 
 	r := mux.NewRouter()
+	r.HandleFunc("/", getNewsHandler).Methods("GET")
 	r.HandleFunc("/mexos", getMyTwittsHandler).Methods("GET")
 
 	log.Println("Running the server on port 8000...")
