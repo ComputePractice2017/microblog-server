@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/practice/microblog-server/model"
+	"github.com/gorilla/mux"
 )
 
 func getMyTwittsHandler(w http.ResponseWriter, r *http.Request) {
@@ -90,5 +91,16 @@ func firstOptionsHandler(w http.ResponseWriter, r *http.Request) {
 }
 func secondOptionsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Allow", "OPTIONS, PUT, DELETE")
+	w.WriteHeader(http.StatusOK)
+}
+func deleteTwittHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	err := model.DeleteTwitt(vars["guid"])
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+		return
+	}
 	w.WriteHeader(http.StatusOK)
 }
